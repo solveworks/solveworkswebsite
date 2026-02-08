@@ -1,0 +1,17 @@
+{
+  "name": "solveworks-automations",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.9.15"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^1.35.7",
+    "dotenv": "^17.2.4"
+  }
+}
