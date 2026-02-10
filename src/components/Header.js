@@ -1,9 +1,11 @@
+import logo from '../assets/logo.png'
+
 export function Header() {
   return `
     <header class="glass-header">
       <div class="header-content">
         <a href="/" class="logo-group">
-          <img src="/logo.png" alt="Solveworks Logo" class="header-logo">
+          <img src="${logo}" alt="Solveworks Logo" class="header-logo">
           <div class="logo">Solveworks Automations</div>
         </a>
         <nav class="glass-nav">
