@@ -3,7 +3,7 @@ export function Header() {
     <header class="glass-header">
       <div class="header-content">
         <a href="/" class="logo-group">
-          <img src="/designinspo/Solveworks Logo1 Small.png" alt="Solveworks Logo" class="header-logo">
+          <img src="/logo.png" alt="Solveworks Logo" class="header-logo">
           <div class="logo">Solveworks Automations</div>
         </a>
         <nav class="glass-nav">
