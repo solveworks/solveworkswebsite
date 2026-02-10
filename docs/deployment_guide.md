@@ -1,53 +1,49 @@
-# Deployment Guide
+# 🚀 Step-by-Step Deployment Guide
 
-This guide outlines the steps to securely deploy the Solveworks Automations website.
+Follow these steps to move from your local environment to your live domain on Cloudflare Pages.
 
-## 1. GitHub Preparation
+## 1. Cloudflare Pages Initial Setup
 
-Before pushing to a public repository:
-- Ensure `.env` is NOT tracked (check with `git status`).
-- Ensure `.gitignore` contains `.env`.
+1.  **Log in** to your [Cloudflare Dashboard](https://dash.cloudflare.com/).
+2.  Go to **Workers & Pages** in the left sidebar.
+3.  Click **Create application** > **Pages** > **Connect to Git**.
+4.  Select your GitHub account and the `solveworkswebsite` repository.
+5.  **Set up builds and deployments**:
+    - **Project name**: `solveworks-automations` (or similar).
+    - **Production branch**: `master`.
+    - **Framework preset**: `Vite`.
+    - **Build command**: `npm run build`.
+    - **Build output directory**: `dist`.
 
-### GitHub Secrets (Optional)
-If you plan to use GitHub Actions for deployment, add your secrets in **Settings > Secrets and variables > Actions**:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_KEY`
+## 2. Setting Environment Variables (CRITICAL)
 
-## 2. Cloudflare Pages Deployment
+**Before you click "Save and Deploy"**, you must add your Supabase keys:
 
-When setting up your project on Cloudflare Pages:
+1.  Click **Environment variables (advanced)** in the setup screen (or go to **Settings > Variables and Secrets** if the project is already created).
+2.  Add the following variables:
+    - `VITE_SUPABASE_URL`: (Copy the value from your `.env` file)
+    - `VITE_SUPABASE_KEY`: (Copy the value from your `.env` file)
+3.  Click **Save and Deploy**. Cloudflare will now build your site and give you a `pages.dev` preview URL.
 
-1. **Build Settings**:
-   - Framework preset: `Vite`
-   - Build command: `npm run build`
-   - Build output directory: `dist`
+## 3. Custom Domain & Squarespace Transition
 
-2. **Environment Variables**:
-   In the Cloudflare dashboard, go to **Settings > Environment variables** and add:
-   - `VITE_SUPABASE_URL`: `your_supabase_url`
-   - `VITE_SUPABASE_KEY`: `your_supabase_anon_key`
+To use `solveworksautomations.com`, you need to point your domain away from Squarespace:
 
-> [!NOTE]
-> Make sure to use the **Anon/Public** key for these variables.
+1.  In the Cloudflare project, go to **Custom domains** tab.
+2.  Click **Set up a custom domain** and enter `solveworksautomations.com`.
+3.  Cloudflare will detect where your DNS is currently hosted.
+    - **If your DNS is at Squarespace**: You will need to log into Squarespace to update your Nameservers to the ones Cloudflare provides.
+    - **If Cloudflare is already managing your DNS**: It will offer to automatically update your CNAME records.
+4.  Once the custom domain is "Active", Cloudflare will handle the SSL (HTTPS) automatically.
 
-## 3. Supabase Security (Critical)
+## 4. Final Security Check (Supabase)
 
-Since the `VITE_SUPABASE_KEY` is exposed in the browser, you MUST secure your data using Row Level Security (RLS).
+Ensure your production URL is allowed in Supabase:
 
-### Enable RLS
-For each table (e.g., `submissions`, `text_submissions`):
-1. Go to the **Authentication > Policies** tab in Supabase.
-2. Click **Enable RLS**.
+1.  Go to **Supabase Dashboard > Authentication > URL Configuration**.
+2.  Add `https://solveworksautomations.com` to **Redirect URLs**.
+3.  Verify your RLS policies are active for `submissions` and `text.submissions` (see `docs/architecture/fix_rls_v2.sql`).
 
-### Create Policies
-Example policy for the contact form (Allowing anonymous inserts only):
-```sql
-CREATE POLICY "Enable insert for anonymous users" 
-ON public.submissions 
-FOR INSERT 
-TO anon 
-WITH CHECK (true);
-```
+## 🛠️ Maintenance & Updates
+Whenever you push new changes to the `master` branch on GitHub, Cloudflare Pages will automatically rebuild and deploy the updates!
 
-> [!WARNING]
-> DO NOT create a `SELECT` policy for `anon` unless you want anyone on the internet to be able to read all your form submissions.
